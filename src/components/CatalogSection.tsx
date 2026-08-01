@@ -2,10 +2,12 @@
 import { motion } from "motion/react";
 import { ShoppingCart, Star, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 const products = [
   {
     id: 1,
+    slug: "caramel-crunch",
     name: "Caramel Crunch",
     tagline: "Our Signature",
     price: "3.49",
@@ -21,6 +23,7 @@ const products = [
   },
   {
     id: 2,
+    slug: "dark-choco-fudge",
     name: "Dark Choco Fudge",
     tagline: "For Chocolate Lovers",
     price: "3.49",
@@ -36,6 +39,7 @@ const products = [
   },
   {
     id: 3,
+    slug: "strawberry-blaze",
     name: "Strawberry Blaze",
     tagline: "Fruity & Fierce",
     price: "3.49",
@@ -51,6 +55,7 @@ const products = [
   },
   {
     id: 4,
+    slug: "peanut-butter-pro",
     name: "Peanut Butter Pro",
     tagline: "Classic. Bold. Powerful.",
     price: "3.49",
@@ -68,11 +73,29 @@ const products = [
 
 function ProductCard({ p, i }: { p: typeof products[0]; i: number }) {
   const [added, setAdded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleAdd = (e: React.MouseEvent) => {
+  const handleAdd = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    setLoading(true);
+
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      window.location.href = `/login?next=/#products`;
+      return;
+    }
+
+    await fetch("/api/cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug: p.slug }),
+    });
+
+    setLoading(false);
     setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
+    setTimeout(() => setAdded(false), 2000);
   };
 
   return (
@@ -170,7 +193,8 @@ function ProductCard({ p, i }: { p: typeof products[0]; i: number }) {
           <span className="font-heading text-3xl text-white">${p.price}</span>
           <button
             onClick={handleAdd}
-            className="flex-1 flex items-center justify-center gap-2 py-3 font-body font-semibold text-[10px] tracking-[0.2em] uppercase transition-all duration-200"
+            disabled={loading}
+            className="flex-1 flex items-center justify-center gap-2 py-3 font-body font-semibold text-[10px] tracking-[0.2em] uppercase transition-all duration-200 disabled:opacity-70"
             style={{
               background: added ? "rgba(34,197,94,0.9)" : "rgba(232,82,42,0.9)",
               backdropFilter: "blur(8px)",
@@ -178,7 +202,7 @@ function ProductCard({ p, i }: { p: typeof products[0]; i: number }) {
             }}
           >
             <ShoppingCart size={13} />
-            {added ? "Added!" : "Add to Cart"}
+            {loading ? "…" : added ? "Added!" : "Add to Cart"}
           </button>
         </div>
       </div>
