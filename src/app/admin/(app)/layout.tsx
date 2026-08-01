@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import prisma from "@/lib/prisma";
 import AdminSidebar from "../AdminSidebar";
+import OrderNotifier from "@/components/admin/OrderNotifier";
 
 export default async function AdminAppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -17,6 +18,7 @@ export default async function AdminAppLayout({ children }: { children: React.Rea
       <main className="flex-1 overflow-auto lg:ml-64 pt-14 lg:pt-0">
         <div className="p-6 lg:p-8">{children}</div>
       </main>
+      <OrderNotifier />
     </div>
   );
 }
