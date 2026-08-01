@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   title: "PROVIT | Premium Protein Bars",
   description:
     "Fuel your performance with PROVIT protein bars. Clean ingredients, bold flavors, unstoppable results.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

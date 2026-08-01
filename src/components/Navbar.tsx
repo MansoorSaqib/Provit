@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Menu, X, ShoppingCart } from "lucide-react";
+import Image from "next/image";
 
 const links = [
   { label: "Products", href: "#products" },
@@ -29,8 +30,15 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-5 flex items-center justify-between">
         {/* Logo */}
-        <a href="#" className="font-heading text-3xl tracking-widest text-brand-white">
-          PRO<span className="text-brand-flame">VIT</span>
+        <a href="#" className="flex items-center">
+          <Image
+            src="/logo.png"
+            alt="PROVIT"
+            width={210}
+            height={140}
+            className="h-14 w-auto object-contain"
+            priority
+          />
         </a>
 
         {/* Desktop links */}
