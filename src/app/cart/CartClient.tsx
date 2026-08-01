@@ -115,9 +115,9 @@ export default function CartClient({ items: initial, total: initialTotal }: { it
           <span className="font-heading text-3xl text-brand-white">${total.toFixed(2)}</span>
         </div>
 
-        <button className="w-full bg-brand-flame hover:bg-brand-flame-dark text-white font-body text-xs font-semibold tracking-[0.25em] uppercase py-4 transition-colors mb-3">
+        <a href="/checkout" className="block w-full bg-brand-flame hover:bg-brand-flame-dark text-white font-body text-xs font-semibold tracking-[0.25em] uppercase py-4 transition-colors mb-3 text-center">
           Proceed to Checkout
-        </button>
+        </a>
         <a href="/#products" className="block text-center font-body text-[10px] tracking-[0.15em] uppercase text-brand-muted hover:text-brand-white transition-colors">
           Continue Shopping
         </a>
