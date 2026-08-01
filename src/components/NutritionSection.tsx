@@ -3,33 +3,30 @@ import { motion } from "motion/react";
 import { CheckCircle2 } from "lucide-react";
 
 const macros = [
-  { name: "Protein", value: 20, max: 30, unit: "g", color: "#E8522A" },
-  { name: "Total Carbs", value: 24, max: 40, unit: "g", color: "#C8832A" },
-  { name: "Dietary Fiber", value: 5, max: 15, unit: "g", color: "#E4A854" },
-  { name: "Total Fat", value: 8, max: 20, unit: "g", color: "#6B6B6B" },
+  { name: "Protein",       value: 11.1, max: 30, unit: "g", color: "#E8522A" },
+  { name: "Total Carbs",   value: 16,   max: 40, unit: "g", color: "#C8832A" },
+  { name: "Dietary Fiber", value: 1.08, max: 15, unit: "g", color: "#E4A854" },
+  { name: "Total Fat",     value: 7.4,  max: 20, unit: "g", color: "#6B6B6B" },
 ];
 
 const ingredients = [
-  "Whey Protein Isolate",
-  "Oat Flour",
-  "Dark Chocolate Chips",
-  "Whole Almonds",
-  "Natural Caramel",
-  "Himalayan Salt",
-  "Sunflower Lecithin",
-  "Vitamin E (Natural)",
+  "Almonds",
+  "Rolled Oats",
+  "Peanuts",
+  "Roasted Channa",
+  "Foxnut Powder",
+  "Psyllium Husk",
+  "Honey",
+  "Pista Butter",
+  "Dates",
 ];
 
 const facts = [
-  { label: "Total Fat", value: "8g", pct: "10%", indent: false },
-  { label: "Saturated Fat", value: "2.5g", pct: "13%", indent: true },
-  { label: "Trans Fat", value: "0g", pct: "", indent: true },
-  { label: "Cholesterol", value: "30mg", pct: "10%", indent: false },
-  { label: "Sodium", value: "180mg", pct: "8%", indent: false },
-  { label: "Total Carbohydrate", value: "24g", pct: "9%", indent: false },
-  { label: "Dietary Fiber", value: "5g", pct: "18%", indent: true },
-  { label: "Total Sugars", value: "6g", pct: "", indent: true },
-  { label: "Protein", value: "20g", pct: "40%", indent: false, highlight: true },
+  { label: "Total Carbs",   value: "16g",    pct: "37%", indent: false },
+  { label: "Dietary Fiber", value: "1.08g",  pct: "",    indent: true },
+  { label: "Total Sugars",  value: "7g",     pct: "",    indent: true },
+  { label: "Protein",       value: "11.1g",  pct: "27%", indent: false, highlight: true },
+  { label: "Total Fat",     value: "7.4g",   pct: "18%", indent: false },
 ];
 
 export default function NutritionSection() {
@@ -68,8 +65,8 @@ export default function NutritionSection() {
               transition={{ delay: 0.2 }}
               className="font-body text-brand-muted leading-relaxed mb-10"
             >
-              Every ingredient earns its place. We stripped away the fillers and loaded each bar
-              with nutrients your body genuinely needs to perform at its peak.
+              Every ingredient earns its place. Almonds, oats, peanuts, honey, and dates — real food
+              that fuels real performance, with 11g of protein per 40g bar.
             </motion.p>
 
             {/* Macro bars */}
@@ -140,7 +137,7 @@ export default function NutritionSection() {
                 <p className="font-body text-brand-muted text-sm">1 serving per container</p>
                 <div className="flex justify-between items-baseline">
                   <p className="font-body text-brand-muted text-sm">Serving size</p>
-                  <p className="font-body text-brand-white text-sm font-bold">1 bar (62g)</p>
+                  <p className="font-body text-brand-white text-sm font-bold">1 bar (40g)</p>
                 </div>
               </div>
 
@@ -150,7 +147,7 @@ export default function NutritionSection() {
                   <p className="font-body text-brand-muted text-xs">Amount per serving</p>
                   <p className="font-body text-brand-muted text-sm font-bold">Calories</p>
                 </div>
-                <div className="font-heading text-6xl text-brand-white leading-none">220</div>
+                <div className="font-heading text-6xl text-brand-white leading-none">172</div>
               </div>
 
               <div className="flex justify-end border-b border-brand-white pb-1 mb-2">
