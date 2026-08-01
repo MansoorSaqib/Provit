@@ -8,8 +8,15 @@ export async function placeOrder(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/checkout");
 
-  const profile = await prisma.profile.findUnique({ where: { authId: user.id } });
-  if (!profile) redirect("/login");
+  const profile = await prisma.profile.upsert({
+    where: { authId: user.id },
+    create: {
+      authId: user.id,
+      email: user.email!,
+      name: (user.user_metadata?.name as string | undefined) ?? null,
+    },
+    update: {},
+  });
 
   const cart = await prisma.cart.findUnique({
     where: { profileId: profile.id },

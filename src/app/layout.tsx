@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from "@/context/CartContext";
+import CartDrawer from "@/components/CartDrawer";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -31,7 +33,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${bebasNeue.variable} ${montserrat.variable}`}>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <CartProvider>
+          {children}
+          <CartDrawer />
+        </CartProvider>
+      </body>
     </html>
   );
 }

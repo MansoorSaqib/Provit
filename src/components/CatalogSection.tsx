@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { ShoppingCart, Star, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useCart } from "@/context/CartContext";
 
 const products = [
   {
@@ -74,6 +75,7 @@ const products = [
 function ProductCard({ p, i }: { p: typeof products[0]; i: number }) {
   const [added, setAdded] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { openCart, setCartCount } = useCart();
 
   const handleAdd = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -95,6 +97,8 @@ function ProductCard({ p, i }: { p: typeof products[0]; i: number }) {
 
     setLoading(false);
     setAdded(true);
+    setCartCount((prev) => prev + 1);
+    openCart();
     setTimeout(() => setAdded(false), 2000);
   };
 

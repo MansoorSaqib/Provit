@@ -9,8 +9,14 @@ export default async function AccountPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/account");
 
-  const profile = await prisma.profile.findUnique({
+  const profile = await prisma.profile.upsert({
     where: { authId: user.id },
+    create: {
+      authId: user.id,
+      email: user.email!,
+      name: (user.user_metadata?.name as string | undefined) ?? null,
+    },
+    update: {},
     include: {
       orders: {
         orderBy: { createdAt: "desc" },
@@ -18,8 +24,6 @@ export default async function AccountPage() {
       },
     },
   });
-
-  if (!profile) redirect("/login");
 
   const activeStatuses = ["PENDING", "PROCESSING", "SHIPPED"];
   const activeOrders = profile.orders.filter((o) => activeStatuses.includes(o.status));

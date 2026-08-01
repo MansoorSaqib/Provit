@@ -6,7 +6,15 @@ async function getProfile() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  return prisma.profile.findUnique({ where: { authId: user.id } });
+  return prisma.profile.upsert({
+    where: { authId: user.id },
+    create: {
+      authId: user.id,
+      email: user.email!,
+      name: (user.user_metadata?.name as string | undefined) ?? null,
+    },
+    update: {},
+  });
 }
 
 export async function GET() {
