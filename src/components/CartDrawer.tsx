@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { X, ShoppingCart, ArrowRight } from "lucide-react";
+import { X, ShoppingCart, ArrowRight, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 type DrawerItem = {
@@ -11,9 +11,10 @@ type DrawerItem = {
 };
 
 export default function CartDrawer() {
-  const { isOpen, closeCart } = useCart();
+  const { isOpen, closeCart, setCartCount } = useCart();
   const [items, setItems] = useState<DrawerItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -23,6 +24,30 @@ export default function CartDrawer() {
       .then((data) => setItems(data.items ?? []))
       .finally(() => setLoading(false));
   }, [isOpen]);
+
+  async function updateQty(itemId: string, quantity: number) {
+    if (quantity < 1) return removeItem(itemId);
+    setBusy(itemId);
+    await fetch(`/api/cart/${itemId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quantity }),
+    });
+    setItems((prev) =>
+      prev.map((i) => (i.id === itemId ? { ...i, quantity } : i)),
+    );
+    setCartCount(items.reduce((s, i) => s + (i.id === itemId ? quantity : i.quantity), 0));
+    setBusy(null);
+  }
+
+  async function removeItem(itemId: string) {
+    setBusy(itemId);
+    await fetch(`/api/cart/${itemId}`, { method: "DELETE" });
+    const next = items.filter((i) => i.id !== itemId);
+    setItems(next);
+    setCartCount(next.reduce((s, i) => s + i.quantity, 0));
+    setBusy(null);
+  }
 
   const subtotal = items.reduce(
     (s, i) => s + Number(i.product.price) * i.quantity,
@@ -81,27 +106,63 @@ export default function CartDrawer() {
           )}
 
           {!loading && items.length > 0 && (
-            <div className="space-y-4">
+            <div className="space-y-1">
               {items.map((item) => (
-                <div key={item.id} className="flex items-center gap-4 py-4 border-b border-brand-border last:border-0">
-                  {/* Avatar */}
-                  <div className="w-10 h-10 flex-shrink-0 bg-brand-card border border-brand-border flex items-center justify-center">
-                    <span className="font-heading text-base text-brand-caramel leading-none">
-                      {item.product.name.charAt(0)}
+                <div
+                  key={item.id}
+                  className={`py-4 border-b border-brand-border last:border-0 transition-opacity ${busy === item.id ? "opacity-40 pointer-events-none" : ""}`}
+                >
+                  <div className="flex items-start gap-3">
+                    {/* Avatar */}
+                    <div className="w-9 h-9 flex-shrink-0 bg-brand-card border border-brand-border flex items-center justify-center">
+                      <span className="font-heading text-sm text-brand-caramel leading-none">
+                        {item.product.name.charAt(0)}
+                      </span>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body text-xs font-semibold text-brand-white leading-snug">
+                        {item.product.name}
+                      </p>
+                      <p className="font-body text-[10px] text-brand-muted">{item.flavor}</p>
+                    </div>
+
+                    <span className="font-heading text-base text-brand-white flex-shrink-0">
+                      ${(Number(item.product.price) * item.quantity).toFixed(2)}
                     </span>
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <p className="font-body text-xs font-semibold text-brand-white leading-snug">
-                      {item.product.name}
-                    </p>
-                    <p className="font-body text-[10px] text-brand-muted">{item.flavor}</p>
-                    <p className="font-body text-[10px] text-brand-muted mt-0.5">Qty: {item.quantity}</p>
-                  </div>
+                  {/* Qty controls + remove */}
+                  <div className="flex items-center justify-between mt-3 pl-12">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateQty(item.id, item.quantity - 1)}
+                        disabled={!!busy}
+                        className="w-7 h-7 border border-brand-border text-brand-white hover:border-brand-muted flex items-center justify-center font-body text-sm transition-colors disabled:opacity-40"
+                      >
+                        −
+                      </button>
+                      <span className="font-heading text-lg text-brand-white w-5 text-center leading-none">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => updateQty(item.id, item.quantity + 1)}
+                        disabled={!!busy}
+                        className="w-7 h-7 border border-brand-border text-brand-white hover:border-brand-muted flex items-center justify-center font-body text-sm transition-colors disabled:opacity-40"
+                      >
+                        +
+                      </button>
+                    </div>
 
-                  <span className="font-heading text-lg text-brand-white flex-shrink-0">
-                    ${(Number(item.product.price) * item.quantity).toFixed(2)}
-                  </span>
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      disabled={!!busy}
+                      className="text-brand-muted hover:text-brand-flame transition-colors disabled:opacity-40"
+                      aria-label="Remove item"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
