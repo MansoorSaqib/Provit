@@ -16,11 +16,15 @@ export default function AdminLoginForm() {
     setError("");
 
     const supabase = createClient();
-    const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
-    if (authError) { setError(authError.message); setLoading(false); return; }
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    if (authError) {
+      setError(authError.message);
+      setLoading(false);
+      return;
+    }
 
-    // Fetch profile to check role
-    const res = await fetch("/api/me");
+    // Let the server pick up the new session cookies before checking role
+    const res = await fetch("/api/me", { cache: "no-store" });
     const profile = await res.json();
 
     if (profile.role === "ADMIN") {

@@ -11,7 +11,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/account";
+  const next = searchParams.get("next") || "/";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
