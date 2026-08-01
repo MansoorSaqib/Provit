@@ -1,44 +1,55 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import prisma from "@/lib/prisma";
+import OrderRingChart from "@/components/admin/OrderRingChart";
 
 async function getStats() {
-  const [totalOrders, earnedResult, pendingResult, totalCustomers, recentOrders, lowStock, ordersByStatus] =
-    await Promise.all([
-      prisma.order.count(),
-      prisma.order.aggregate({ _sum: { total: true }, where: { status: "DELIVERED" } }),
-      prisma.order.aggregate({ _sum: { total: true }, where: { status: { in: ["PENDING", "PROCESSING", "SHIPPED"] } } }),
-      prisma.profile.count({ where: { role: "USER" } }),
-      prisma.order.findMany({
-        take: 8,
-        orderBy: { createdAt: "desc" },
-        include: { profile: { select: { name: true, email: true } } },
-      }),
-      prisma.inventory.findMany({
-        where: { stock: { lte: 10 } },
-        include: { product: { select: { name: true } } },
-      }),
-      prisma.order.groupBy({ by: ["status"], _count: { _all: true } }),
-    ]);
+  const [
+    totalOrders,
+    completedOrders,
+    pendingOrders,
+    cancelledOrders,
+    earnedResult,
+    pendingAmountResult,
+    totalCustomers,
+    recentOrders,
+    ordersByStatus,
+  ] = await Promise.all([
+    prisma.order.count(),
+    prisma.order.count({ where: { status: "DELIVERED" } }),
+    prisma.order.count({ where: { status: { in: ["PENDING", "PROCESSING", "SHIPPED"] } } }),
+    prisma.order.count({ where: { status: { in: ["CANCELLED", "REFUNDED"] } } }),
+    prisma.order.aggregate({ _sum: { total: true }, where: { status: "DELIVERED" } }),
+    prisma.order.aggregate({ _sum: { total: true }, where: { status: { in: ["PENDING", "PROCESSING", "SHIPPED"] } } }),
+    prisma.profile.count({ where: { role: "USER" } }),
+    prisma.order.findMany({
+      take: 8,
+      orderBy: { createdAt: "desc" },
+      include: { profile: { select: { name: true, email: true } } },
+    }),
+    prisma.order.groupBy({ by: ["status"], _count: { _all: true } }),
+  ]);
 
   return {
     totalOrders,
+    completedOrders,
+    pendingOrders,
+    cancelledOrders,
     earned: earnedResult._sum.total ?? 0,
-    pending: pendingResult._sum.total ?? 0,
+    pendingAmount: pendingAmountResult._sum.total ?? 0,
     totalCustomers,
     recentOrders,
-    lowStock,
     ordersByStatus,
   };
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  PENDING: "text-yellow-400 bg-yellow-400/10",
+  PENDING:    "text-yellow-400 bg-yellow-400/10",
   PROCESSING: "text-blue-400 bg-blue-400/10",
-  SHIPPED: "text-purple-400 bg-purple-400/10",
-  DELIVERED: "text-green-400 bg-green-400/10",
-  CANCELLED: "text-red-400 bg-red-400/10",
-  REFUNDED: "text-orange-400 bg-orange-400/10",
+  SHIPPED:    "text-purple-400 bg-purple-400/10",
+  DELIVERED:  "text-green-400 bg-green-400/10",
+  CANCELLED:  "text-red-400 bg-red-400/10",
+  REFUNDED:   "text-orange-400 bg-orange-400/10",
 };
 
 export default async function AdminDashboard() {
@@ -47,13 +58,24 @@ export default async function AdminDashboard() {
   if (!user) redirect("/login");
   const profile = await prisma.profile.findUnique({ where: { authId: user.id } });
   if (profile?.role !== "ADMIN") redirect("/admin/orders");
-  const { totalOrders, earned, pending, totalCustomers, recentOrders, ordersByStatus } = await getStats();
 
-  const stats = [
-    { label: "Earned", value: `$${Number(earned).toFixed(2)}`, sub: "Delivered orders", accent: "text-green-400" },
-    { label: "Pending Amount", value: `$${Number(pending).toFixed(2)}`, sub: "In progress", accent: "text-yellow-400" },
-    { label: "Total Orders", value: totalOrders.toString(), sub: "All time", accent: "" },
-    { label: "Customers", value: totalCustomers.toString(), sub: "Registered", accent: "" },
+  const {
+    totalOrders,
+    completedOrders,
+    pendingOrders,
+    cancelledOrders,
+    earned,
+    pendingAmount,
+    totalCustomers,
+    recentOrders,
+    ordersByStatus,
+  } = await getStats();
+
+  const revenueStats = [
+    { label: "Earned",         value: `$${Number(earned).toFixed(2)}`,        sub: "Delivered orders", accent: "text-green-400" },
+    { label: "Pending Amount", value: `$${Number(pendingAmount).toFixed(2)}`,  sub: "In progress",     accent: "text-yellow-400" },
+    { label: "Customers",      value: totalCustomers.toString(),               sub: "Registered",       accent: "" },
+    { label: "Products",       value: "4",                                     sub: "Active",           accent: "" },
   ];
 
   return (
@@ -65,9 +87,17 @@ export default async function AdminDashboard() {
         </p>
       </div>
 
-      {/* Stat cards */}
+      {/* Order ring chart */}
+      <OrderRingChart
+        total={totalOrders}
+        completed={completedOrders}
+        pending={pendingOrders}
+        cancelled={cancelledOrders}
+      />
+
+      {/* Revenue / customer stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {stats.map((s) => (
+        {revenueStats.map((s) => (
           <div key={s.label} className="bg-brand-surface border border-brand-border p-5">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-brand-muted mb-3">{s.label}</p>
             <p className={`font-heading text-4xl leading-none mb-1 ${s.accent || "text-brand-white"}`}>{s.value}</p>
