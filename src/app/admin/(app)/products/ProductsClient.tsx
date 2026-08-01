@@ -1,6 +1,6 @@
 "use client";
 import { useTransition } from "react";
-import { toggleProductActive } from "../actions";
+import { toggleProductActive } from "../../actions";
 
 type Product = {
   id: string;

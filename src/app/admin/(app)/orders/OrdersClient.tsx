@@ -1,6 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
-import { updateOrderStatus } from "../actions";
+import { updateOrderStatus } from "../../actions";
 
 const STATUSES = ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"] as const;
 type Status = typeof STATUSES[number];

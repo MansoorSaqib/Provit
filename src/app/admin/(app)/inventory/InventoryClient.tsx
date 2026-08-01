@@ -1,6 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
-import { updateInventoryStock } from "../actions";
+import { updateInventoryStock } from "../../actions";
 
 type InventoryItem = {
   id: string;
