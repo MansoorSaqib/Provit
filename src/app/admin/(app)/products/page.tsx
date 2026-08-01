@@ -4,7 +4,10 @@ import ProductsClient from "./ProductsClient";
 export default async function ProductsPage() {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "asc" },
-    include: { inventory: true, _count: { select: { orderItems: true } } },
+    include: {
+      inventory: { select: { id: true, flavor: true, stock: true } },
+      _count: { select: { orderItems: true } },
+    },
   });
 
   return (
