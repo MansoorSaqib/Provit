@@ -9,7 +9,15 @@ type CartItem = {
   product: { id: string; name: string; price: string; slug: string };
 };
 
-export default function CheckoutClient({ items }: { items: CartItem[] }) {
+export default function CheckoutClient({
+  items,
+  defaultEmail,
+  defaultPhone,
+}: {
+  items: CartItem[];
+  defaultEmail: string;
+  defaultPhone: string;
+}) {
   const [pending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +30,7 @@ export default function CheckoutClient({ items }: { items: CartItem[] }) {
     const form = formRef.current!;
     const data = new FormData(form);
 
-    const required = ["fullName", "line1", "city", "state", "postalCode"];
+    const required = ["email", "phone", "fullName", "line1", "city", "state", "postalCode"];
     for (const field of required) {
       if (!(data.get(field) as string)?.trim()) {
         setError("Please fill in all required fields.");
@@ -39,6 +47,17 @@ export default function CheckoutClient({ items }: { items: CartItem[] }) {
     <div className="grid lg:grid-cols-[1fr_340px] gap-8 items-start">
       {/* Shipping form */}
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+
+        {/* Contact info */}
+        <div className="bg-brand-surface border border-brand-border p-6">
+          <h2 className="font-heading text-2xl text-brand-white tracking-wide mb-6">CONTACT INFO</h2>
+          <div className="space-y-4">
+            <Field label="Email *" name="email" placeholder="you@example.com" type="email" defaultValue={defaultEmail} />
+            <Field label="Phone Number *" name="phone" placeholder="+92 300 0000000" type="tel" defaultValue={defaultPhone} />
+          </div>
+        </div>
+
+        {/* Shipping address */}
         <div className="bg-brand-surface border border-brand-border p-6">
           <h2 className="font-heading text-2xl text-brand-white tracking-wide mb-6">SHIPPING ADDRESS</h2>
 
@@ -145,11 +164,15 @@ function Field({
   name,
   placeholder,
   required = true,
+  type = "text",
+  defaultValue = "",
 }: {
   label: string;
   name: string;
   placeholder: string;
   required?: boolean;
+  type?: string;
+  defaultValue?: string;
 }) {
   return (
     <div>
@@ -157,10 +180,11 @@ function Field({
         {label}
       </label>
       <input
-        type="text"
+        type={type}
         name={name}
         placeholder={placeholder}
         required={required}
+        defaultValue={defaultValue}
         className="w-full bg-brand-card border border-brand-border text-brand-white font-body text-sm px-4 py-3 placeholder:text-brand-muted/40 focus:outline-none focus:border-brand-caramel/60 transition-colors"
       />
     </div>

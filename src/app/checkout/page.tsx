@@ -42,7 +42,11 @@ export default async function CheckoutPage() {
             COMPLETE ORDER
           </h1>
         </div>
-        <CheckoutClient items={JSON.parse(JSON.stringify(items))} />
+        <CheckoutClient
+          items={JSON.parse(JSON.stringify(items))}
+          defaultEmail={profile.email}
+          defaultPhone={profile.phone ?? ""}
+        />
       </div>
     </div>
   );
