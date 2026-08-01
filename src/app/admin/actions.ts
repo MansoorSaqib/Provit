@@ -45,34 +45,17 @@ function toSlug(name: string) {
   return name.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
-async function uploadProductImage(file: File): Promise<string | null> {
-  if (!file || file.size === 0) return null;
-  const ext  = file.name.split(".").pop() ?? "jpg";
-  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const buf  = Buffer.from(await file.arrayBuffer());
-
-  const { error } = await supabaseAdmin.storage
-    .from("products")
-    .upload(path, buf, { contentType: file.type, upsert: false });
-
-  if (error) throw new Error(`Image upload failed: ${error.message}`);
-
-  return supabaseAdmin.storage.from("products").getPublicUrl(path).data.publicUrl;
-}
-
 export async function createProduct(formData: FormData) {
   await requireAdmin();
 
-  const name    = (formData.get("name")    as string).trim();
-  const price   = parseFloat(formData.get("price") as string);
-  const tagline = (formData.get("tagline") as string).trim();
-  const stock   = parseInt(formData.get("stock") as string, 10);
-  const file    = formData.get("image") as File;
-
-  const imageUrl = await uploadProductImage(file);
+  const name     = (formData.get("name")     as string).trim();
+  const price    = parseFloat(formData.get("price") as string);
+  const tagline  = (formData.get("tagline")  as string).trim();
+  const stock    = parseInt(formData.get("stock") as string, 10);
+  const imageUrl = (formData.get("imageUrl") as string | null)?.trim() ?? "";
   const slug     = toSlug(name);
 
-  const product = await prisma.product.create({
+  await prisma.product.create({
     data: {
       name,
       slug,
@@ -87,21 +70,17 @@ export async function createProduct(formData: FormData) {
   });
 
   revalidatePath("/admin/products");
-  return product.id;
 }
 
 export async function updateProduct(productId: string, formData: FormData) {
   await requireAdmin();
 
-  const name    = (formData.get("name")    as string).trim();
-  const price   = parseFloat(formData.get("price") as string);
-  const tagline = (formData.get("tagline") as string).trim();
-  const stock   = parseInt(formData.get("stock") as string, 10);
-  const file    = formData.get("image") as File;
+  const name     = (formData.get("name")     as string).trim();
+  const price    = parseFloat(formData.get("price") as string);
+  const tagline  = (formData.get("tagline")  as string).trim();
+  const stock    = parseInt(formData.get("stock") as string, 10);
+  const imageUrl = (formData.get("imageUrl") as string | null)?.trim() ?? "";
 
-  const imageUrl = await uploadProductImage(file);
-
-  // Update product fields
   const product = await prisma.product.findUnique({
     where: { id: productId },
     include: { inventory: { take: 1 } },
@@ -118,7 +97,6 @@ export async function updateProduct(productId: string, formData: FormData) {
     },
   });
 
-  // Update or create stock entry
   if (product.inventory[0]) {
     await prisma.inventory.update({
       where: { id: product.inventory[0].id },

@@ -164,7 +164,7 @@ function ProductPanel({
     setPreview(URL.createObjectURL(file));
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     const form = formRef.current!;
@@ -178,6 +178,30 @@ function ProductPanel({
       setError("A valid price is required.");
       return;
     }
+
+    // Upload image first via API route, then pass URL to server action
+    const file = fileRef.current?.files?.[0];
+    let imageUrl = preview.startsWith("blob:") ? "" : preview; // keep existing URL on edit
+
+    if (file && file.size > 0) {
+      try {
+        const uploadForm = new FormData();
+        uploadForm.append("file", file);
+        const res = await fetch("/api/admin/upload-image", { method: "POST", body: uploadForm });
+        if (!res.ok) {
+          const err = await res.json();
+          setError(err.error ?? "Image upload failed.");
+          return;
+        }
+        const json = await res.json();
+        imageUrl = json.url;
+      } catch {
+        setError("Image upload failed. Please try again.");
+        return;
+      }
+    }
+
+    data.set("imageUrl", imageUrl);
 
     startTransition(async () => {
       try {
