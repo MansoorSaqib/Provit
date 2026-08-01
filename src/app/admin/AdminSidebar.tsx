@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const allLinks = [
-  { href: "/admin", label: "Dashboard", icon: "▣", adminOnly: true },
+  { href: "/admin/dashboard", label: "Dashboard", icon: "▣", adminOnly: true },
   { href: "/admin/orders", label: "Orders", icon: "◎", adminOnly: false },
   { href: "/admin/products", label: "Products", icon: "◈", adminOnly: false },
   { href: "/admin/inventory", label: "Inventory", icon: "◉", adminOnly: false },
@@ -51,7 +51,7 @@ export default function AdminSidebar({
       {/* Nav */}
       <nav className="flex-1 px-3 py-5 space-y-0.5">
         {links.map((l) => {
-          const active = pathname === l.href || (l.href !== "/admin" && pathname.startsWith(l.href));
+          const active = pathname === l.href || pathname.startsWith(l.href + "/");
           return (
             <a
               key={l.href}

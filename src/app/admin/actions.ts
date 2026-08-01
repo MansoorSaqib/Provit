@@ -70,6 +70,9 @@ export async function updateStaffRole(profileId: string, role: "ADMIN" | "STAFF"
 
 export async function deleteStaffMember(profileId: string, authId: string) {
   await requireAdmin();
+  const target = await prisma.profile.findUnique({ where: { id: profileId } });
+  const superadminEmail = process.env.ADMIN_EMAIL ?? "mansoor@provit.site";
+  if (target?.email === superadminEmail) throw new Error("The superadmin account cannot be removed.");
   await supabaseAdmin.auth.admin.deleteUser(authId);
   await prisma.profile.delete({ where: { id: profileId } });
   revalidatePath("/admin/staff");

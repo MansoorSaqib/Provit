@@ -9,13 +9,9 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
+        getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
@@ -28,25 +24,30 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
 
-  // Auth routes — redirect to account if already logged in
+  // Customer auth routes — redirect to account if already logged in
   if (user && (path === "/login" || path === "/register")) {
     return NextResponse.redirect(new URL("/account", request.url));
   }
 
-  // Protected user routes
-  const userProtected = ["/account", "/cart", "/checkout"];
-  if (!user && userProtected.some((p) => path.startsWith(p))) {
-    const redirectUrl = new URL("/login", request.url);
-    redirectUrl.searchParams.set("next", path);
-    return NextResponse.redirect(redirectUrl);
+  // Protected customer routes
+  const customerProtected = ["/account", "/cart", "/checkout"];
+  if (!user && customerProtected.some((p) => path.startsWith(p))) {
+    const url = new URL("/login", request.url);
+    url.searchParams.set("next", path);
+    return NextResponse.redirect(url);
   }
 
-  // Admin routes — protected + role checked via API
-  if (path.startsWith("/admin")) {
-    if (!user) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    // Role check happens in layout via server-side profile fetch
+  // Admin/staff protected sub-routes — /admin itself is the public login page
+  const adminProtected = [
+    "/admin/dashboard",
+    "/admin/orders",
+    "/admin/products",
+    "/admin/inventory",
+    "/admin/customers",
+    "/admin/staff",
+  ];
+  if (!user && adminProtected.some((p) => path.startsWith(p))) {
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   return supabaseResponse;
