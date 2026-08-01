@@ -3,10 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import prisma from "@/lib/prisma";
 
 async function getStats() {
-  const [totalOrders, revenueResult, totalCustomers, recentOrders, lowStock, ordersByStatus] =
+  const [totalOrders, earnedResult, pendingResult, totalCustomers, recentOrders, lowStock, ordersByStatus] =
     await Promise.all([
       prisma.order.count(),
-      prisma.order.aggregate({ _sum: { total: true } }),
+      prisma.order.aggregate({ _sum: { total: true }, where: { status: "DELIVERED" } }),
+      prisma.order.aggregate({ _sum: { total: true }, where: { status: { in: ["PENDING", "PROCESSING", "SHIPPED"] } } }),
       prisma.profile.count({ where: { role: "USER" } }),
       prisma.order.findMany({
         take: 8,
@@ -20,7 +21,15 @@ async function getStats() {
       prisma.order.groupBy({ by: ["status"], _count: { _all: true } }),
     ]);
 
-  return { totalOrders, revenue: revenueResult._sum.total ?? 0, totalCustomers, recentOrders, lowStock, ordersByStatus };
+  return {
+    totalOrders,
+    earned: earnedResult._sum.total ?? 0,
+    pending: pendingResult._sum.total ?? 0,
+    totalCustomers,
+    recentOrders,
+    lowStock,
+    ordersByStatus,
+  };
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -38,13 +47,13 @@ export default async function AdminDashboard() {
   if (!user) redirect("/login");
   const profile = await prisma.profile.findUnique({ where: { authId: user.id } });
   if (profile?.role !== "ADMIN") redirect("/admin/orders");
-  const { totalOrders, revenue, totalCustomers, recentOrders, ordersByStatus } = await getStats();
+  const { totalOrders, earned, pending, totalCustomers, recentOrders, ordersByStatus } = await getStats();
 
   const stats = [
-    { label: "Total Revenue", value: `$${Number(revenue).toFixed(2)}`, sub: "All time" },
-    { label: "Total Orders", value: totalOrders.toString(), sub: "All time" },
-    { label: "Customers", value: totalCustomers.toString(), sub: "Registered" },
-    { label: "Products", value: "4", sub: "Active" },
+    { label: "Earned", value: `$${Number(earned).toFixed(2)}`, sub: "Delivered orders", accent: "text-green-400" },
+    { label: "Pending Amount", value: `$${Number(pending).toFixed(2)}`, sub: "In progress", accent: "text-yellow-400" },
+    { label: "Total Orders", value: totalOrders.toString(), sub: "All time", accent: "" },
+    { label: "Customers", value: totalCustomers.toString(), sub: "Registered", accent: "" },
   ];
 
   return (
@@ -61,7 +70,7 @@ export default async function AdminDashboard() {
         {stats.map((s) => (
           <div key={s.label} className="bg-brand-surface border border-brand-border p-5">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-brand-muted mb-3">{s.label}</p>
-            <p className="font-heading text-4xl text-brand-white leading-none mb-1">{s.value}</p>
+            <p className={`font-heading text-4xl leading-none mb-1 ${s.accent || "text-brand-white"}`}>{s.value}</p>
             <p className="font-body text-[10px] text-brand-muted">{s.sub}</p>
           </div>
         ))}
