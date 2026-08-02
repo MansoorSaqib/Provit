@@ -73,16 +73,21 @@ model Address {
 // ─────────────────────────────────────────────────────────
 
 model Product {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String   @unique
-  tagline     String?
-  description String?
-  price       Decimal  @db.Decimal(10, 2)
-  images      String[]
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String    @id @default(uuid())
+  name            String
+  slug            String    @unique
+  tagline         String?
+  description     String?
+  costPrice       Decimal?  @db.Decimal(10, 2)
+  price           Decimal   @db.Decimal(10, 2)
+  images          String[]
+  isActive        Boolean   @default(true)
+  discountEnabled Boolean   @default(false)
+  discountType    String?
+  discountValue   Decimal?  @db.Decimal(10, 2)
+  discountEndsAt  DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   inventory  Inventory[]
   cartItems  CartItem[]

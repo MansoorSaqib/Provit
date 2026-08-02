@@ -1,81 +1,58 @@
 "use client";
 import { motion } from "motion/react";
-import { ShoppingCart, Star, ArrowRight } from "lucide-react";
+import { ShoppingCart, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useCart } from "@/context/CartContext";
 
-const products = [
-  {
-    id: 1,
-    slug: "caramel-crunch",
-    name: "Caramel Crunch",
-    tagline: "Our Signature",
-    price: "3.49",
-    protein: 20,
-    calories: 220,
-    rating: 4.9,
-    reviews: 842,
-    from: "#8B5B1A",
-    to: "#C8832A",
-    mid: "#E4A854",
-    badge: "Best Seller",
-    badgeColor: "#E8522A",
-  },
-  {
-    id: 2,
-    slug: "dark-choco-fudge",
-    name: "Dark Choco Fudge",
-    tagline: "For Chocolate Lovers",
-    price: "3.49",
-    protein: 21,
-    calories: 215,
-    rating: 4.8,
-    reviews: 631,
-    from: "#0D0500",
-    to: "#3A1500",
-    mid: "#6B3010",
-    badge: "Fan Favorite",
-    badgeColor: "#C8832A",
-  },
-  {
-    id: 3,
-    slug: "strawberry-blaze",
-    name: "Strawberry Blaze",
-    tagline: "Fruity & Fierce",
-    price: "3.49",
-    protein: 19,
-    calories: 210,
-    rating: 4.7,
-    reviews: 428,
-    from: "#8B1A0D",
-    to: "#CC3B1E",
-    mid: "#E8522A",
-    badge: "New",
-    badgeColor: "#22c55e",
-  },
-  {
-    id: 4,
-    slug: "peanut-butter-pro",
-    name: "Peanut Butter Pro",
-    tagline: "Classic. Bold. Powerful.",
-    price: "3.49",
-    protein: 22,
-    calories: 230,
-    rating: 4.8,
-    reviews: 519,
-    from: "#3B2010",
-    to: "#7A4F28",
-    mid: "#9B6B3A",
-    badge: "High Protein",
-    badgeColor: "#E8522A",
-  },
-];
+export type CatalogProduct = {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string | null;
+  price: number;
+  images: string[];
+  discountEnabled: boolean;
+  discountType: string | null;
+  discountValue: number | null;
+  discountEndsAt: string | null;
+  stock: number;
+};
 
-function ProductCard({ p, i }: { p: typeof products[0]; i: number }) {
+const SLUG_GRADIENTS: Record<string, { from: string; to: string; mid: string }> = {
+  "caramel-crunch":   { from: "#8B5B1A", to: "#C8832A", mid: "#E4A854" },
+  "dark-choco-fudge": { from: "#0D0500", to: "#3A1500", mid: "#6B3010" },
+  "strawberry-blaze": { from: "#8B1A0D", to: "#CC3B1E", mid: "#E8522A" },
+  "peanut-butter-pro":{ from: "#3B2010", to: "#7A4F28", mid: "#9B6B3A" },
+};
+const DEFAULT_GRADIENT = { from: "#1C1C1C", to: "#2A2A2A", mid: "#3A3A3A" };
+
+function getEffectivePrice(p: CatalogProduct): { display: number; original: number | null } {
+  const now = new Date();
+  const active =
+    p.discountEnabled &&
+    p.discountValue != null &&
+    (!p.discountEndsAt || new Date(p.discountEndsAt) > now);
+
+  if (!active || p.discountValue == null) return { display: p.price, original: null };
+
+  const effective =
+    p.discountType === "PERCENT"
+      ? p.price * (1 - p.discountValue / 100)
+      : p.price - p.discountValue;
+
+  return { display: Math.max(0, effective), original: p.price };
+}
+
+function ProductCard({ p, i }: { p: CatalogProduct; i: number }) {
   const [added, setAdded] = useState(false);
   const [loading, setLoading] = useState(false);
   const { openCart, setCartCount } = useCart();
+
+  const gradient = SLUG_GRADIENTS[p.slug] ?? DEFAULT_GRADIENT;
+  const { display: effectivePrice, original: originalPrice } = getEffectivePrice(p);
+  const hasImage = p.images.length > 0;
+  const isOnSale = originalPrice !== null;
 
   const handleAdd = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -110,25 +87,26 @@ function ProductCard({ p, i }: { p: typeof products[0]; i: number }) {
       transition={{ duration: 0.6, delay: i * 0.1 }}
       className="relative overflow-hidden group cursor-pointer"
       style={{
-        background: `linear-gradient(170deg, ${p.from} 0%, ${p.to} 60%, ${p.mid} 100%)`,
+        background: hasImage
+          ? "#0A0A0A"
+          : `linear-gradient(170deg, ${gradient.from} 0%, ${gradient.to} 60%, ${gradient.mid} 100%)`,
         height: "clamp(420px, 55vh, 580px)",
       }}
     >
       {/* Badge */}
-      <div
-        className="absolute top-5 left-5 z-20 px-3 py-1 font-body text-[9px] font-bold text-white tracking-[0.2em] uppercase"
-        style={{ background: p.badgeColor }}
-      >
-        {p.badge}
-      </div>
+      {isOnSale && (
+        <div className="absolute top-5 left-5 z-20 px-3 py-1 font-body text-[9px] font-bold text-white tracking-[0.2em] uppercase bg-brand-flame">
+          SALE
+        </div>
+      )}
 
-      {/* Giant watermark flavor name */}
+      {/* Giant watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <span
           className="font-heading select-none text-white leading-none tracking-widest"
           style={{
             fontSize: "clamp(5rem, 14vw, 12rem)",
-            opacity: 0.06,
+            opacity: hasImage ? 0.03 : 0.06,
             whiteSpace: "nowrap",
           }}
         >
@@ -136,65 +114,63 @@ function ProductCard({ p, i }: { p: typeof products[0]; i: number }) {
         </span>
       </div>
 
-      {/* Center product mockup */}
+      {/* Center content */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div
-          className="transform group-hover:scale-110 group-hover:-translate-y-4 transition-all duration-500 ease-out"
-        >
-          {/* Bar shape */}
-          <div
-            className="w-44 h-16 rounded-2xl relative overflow-hidden shadow-2xl"
-            style={{
-              background: "rgba(255,255,255,0.12)",
-              backdropFilter: "blur(10px)",
-              border: "1px solid rgba(255,255,255,0.2)",
-            }}
-          >
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-              <span className="font-heading text-white text-base tracking-[0.3em] drop-shadow-lg">
-                PRO<span className="opacity-50">VIT</span>
-              </span>
-              <span className="font-body text-white/50 text-[8px] tracking-[0.25em] uppercase">
-                {p.name}
-              </span>
+        {hasImage ? (
+          <img
+            src={p.images[0]}
+            alt={p.name}
+            className="w-full h-full object-contain object-center transform group-hover:scale-110 group-hover:-translate-y-4 transition-all duration-500 ease-out p-10"
+          />
+        ) : (
+          <div className="transform group-hover:scale-110 group-hover:-translate-y-4 transition-all duration-500 ease-out">
+            <div
+              className="w-44 h-16 rounded-2xl relative overflow-hidden shadow-2xl"
+              style={{
+                background: "rgba(255,255,255,0.12)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+                <span className="font-heading text-white text-base tracking-[0.3em] drop-shadow-lg">
+                  PRO<span className="opacity-50">VIT</span>
+                </span>
+                <span className="font-body text-white/50 text-[8px] tracking-[0.25em] uppercase">
+                  {p.name}
+                </span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent" />
             </div>
-            {/* shine */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent" />
           </div>
-
-          {/* Protein pill below bar */}
-          <div className="mt-3 mx-auto w-fit px-3 py-1 bg-black/25 backdrop-blur-sm rounded-full flex items-center gap-1.5">
-            <span className="font-heading text-white text-sm">{p.protein}g</span>
-            <span className="font-body text-white/50 text-[9px] uppercase tracking-widest">Protein</span>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* Bottom info — always visible, more on hover */}
+      {/* Bottom info */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-10 p-6 transition-all duration-400"
+        className="absolute bottom-0 left-0 right-0 z-10 p-6"
         style={{
           background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)",
         }}
       >
-        {/* Stars + reviews */}
-        <div className="flex items-center gap-1.5 mb-3">
-          {[...Array(5)].map((_, j) => (
-            <Star
-              key={j}
-              size={11}
-              className={j < Math.floor(p.rating) ? "text-brand-caramel fill-brand-caramel" : "text-white/20"}
-            />
-          ))}
-          <span className="font-body text-white/40 text-[10px] ml-1">({p.reviews})</span>
-        </div>
+        <p className="font-body text-white/50 text-[10px] tracking-[0.2em] uppercase mb-1">
+          {p.tagline ?? ""}
+        </p>
+        <h3 className="font-heading text-2xl text-white tracking-wide mb-4 leading-tight">
+          {p.name}
+        </h3>
 
-        <p className="font-body text-white/50 text-[10px] tracking-[0.2em] uppercase mb-1">{p.tagline}</p>
-        <h3 className="font-heading text-2xl text-white tracking-wide mb-4 leading-tight">{p.name}</h3>
-
-        {/* Price + CTA */}
         <div className="flex items-center gap-3">
-          <span className="font-heading text-3xl text-white">${p.price}</span>
+          <div className="flex flex-col leading-none">
+            {isOnSale && (
+              <span className="font-body text-white/40 text-xs line-through mb-0.5">
+                Rs. {originalPrice!.toFixed(0)}
+              </span>
+            )}
+            <span className="font-heading text-3xl text-white">
+              Rs. {effectivePrice.toFixed(0)}
+            </span>
+          </div>
           <button
             onClick={handleAdd}
             disabled={loading}
@@ -214,7 +190,7 @@ function ProductCard({ p, i }: { p: typeof products[0]; i: number }) {
   );
 }
 
-export default function CatalogSection() {
+export default function CatalogSection({ products }: { products: CatalogProduct[] }) {
   return (
     <section id="products" className="py-32 bg-brand-surface">
       <div className="max-w-7xl mx-auto px-8 lg:px-16">
@@ -264,12 +240,18 @@ export default function CatalogSection() {
           </motion.a>
         </div>
 
-        {/* Product grid — color IS the card, no box borders */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-          {products.map((p, i) => (
-            <ProductCard key={p.id} p={p} i={i} />
-          ))}
-        </div>
+        {/* Product grid */}
+        {products.length === 0 ? (
+          <div className="text-center py-20 text-brand-muted font-body text-sm">
+            No products available yet.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            {products.map((p, i) => (
+              <ProductCard key={p.id} p={p} i={i} />
+            ))}
+          </div>
+        )}
 
         {/* Bundle strip */}
         <motion.div
@@ -292,11 +274,13 @@ export default function CatalogSection() {
           </div>
           <div className="flex items-center gap-6 flex-shrink-0">
             <div className="text-right">
-              <div className="font-body text-brand-muted text-xs line-through">$13.96</div>
-              <div className="font-heading text-3xl text-brand-white">$11.99</div>
+              <div className="font-body text-brand-muted text-xs line-through">Rs. 1396</div>
+              <div className="font-heading text-3xl text-brand-white">Rs. 1199</div>
             </div>
-            <button className="px-8 py-4 font-body font-semibold text-xs text-white tracking-[0.2em] uppercase transition-all duration-200 hover:shadow-[0_0_30px_rgba(200,131,42,0.3)]"
-              style={{ background: "linear-gradient(135deg, #C8832A, #E8522A)" }}>
+            <button
+              className="px-8 py-4 font-body font-semibold text-xs text-white tracking-[0.2em] uppercase transition-all duration-200 hover:shadow-[0_0_30px_rgba(200,131,42,0.3)]"
+              style={{ background: "linear-gradient(135deg, #C8832A, #E8522A)" }}
+            >
               Get Bundle
             </button>
           </div>
