@@ -201,6 +201,8 @@ function ProductPanel({
       }
     }
 
+    // Strip the raw file — server action only needs the URL, not the binary
+    data.delete("image");
     data.set("imageUrl", imageUrl);
 
     startTransition(async () => {
