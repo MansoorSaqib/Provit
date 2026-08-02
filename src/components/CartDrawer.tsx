@@ -174,7 +174,7 @@ export default function CartDrawer() {
           <div className="px-6 py-5 border-t border-brand-border flex-shrink-0 space-y-3">
             <div className="flex justify-between items-center mb-4">
               <span className="font-body text-sm text-brand-muted">Subtotal</span>
-              <span className="font-heading text-2xl text-brand-white">${subtotal.toFixed(2)}</span>
+              <span className="font-heading text-2xl text-brand-white">PKR {subtotal.toFixed(0)}</span>
             </div>
 
             <a

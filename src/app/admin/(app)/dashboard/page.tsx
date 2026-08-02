@@ -72,8 +72,8 @@ export default async function AdminDashboard() {
   } = await getStats();
 
   const revenueStats = [
-    { label: "Earned",         value: `$${Number(earned).toFixed(2)}`,        sub: "Delivered orders", accent: "text-green-400" },
-    { label: "Pending Amount", value: `$${Number(pendingAmount).toFixed(2)}`,  sub: "In progress",     accent: "text-yellow-400" },
+    { label: "Earned",         value: `PKR ${Number(earned).toFixed(0)}`,        sub: "Delivered orders", accent: "text-green-400" },
+    { label: "Pending Amount", value: `PKR ${Number(pendingAmount).toFixed(0)}`,  sub: "In progress",     accent: "text-yellow-400" },
     { label: "Customers",      value: totalCustomers.toString(),               sub: "Registered",       accent: "" },
     { label: "Products",       value: "4",                                     sub: "Active",           accent: "" },
   ];
@@ -133,7 +133,7 @@ export default async function AdminDashboard() {
                   <span className={`font-body text-[9px] font-semibold tracking-[0.15em] uppercase px-2 py-1 ${STATUS_COLORS[o.status] ?? ""}`}>
                     {o.status}
                   </span>
-                  <span className="font-heading text-lg text-brand-white">${Number(o.total).toFixed(2)}</span>
+                  <span className="font-heading text-lg text-brand-white">PKR {Number(o.total).toFixed(0)}</span>
                 </div>
               </div>
             ))}

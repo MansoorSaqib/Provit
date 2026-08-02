@@ -135,7 +135,7 @@ export default function CheckoutClient({
         <div className="space-y-2 mb-5 pb-5 border-b border-brand-border">
           <div className="flex justify-between font-body text-xs text-brand-muted">
             <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>PKR {subtotal.toFixed(0)}</span>
           </div>
           <div className="flex justify-between font-body text-xs text-brand-muted">
             <span>Shipping</span>
@@ -145,7 +145,7 @@ export default function CheckoutClient({
 
         <div className="flex justify-between">
           <span className="font-body text-sm font-semibold text-brand-white">Total</span>
-          <span className="font-heading text-3xl text-brand-white">${subtotal.toFixed(2)}</span>
+          <span className="font-heading text-3xl text-brand-white">PKR {subtotal.toFixed(0)}</span>
         </div>
 
         <a

@@ -95,11 +95,11 @@ export default function ProductsClient({ products: initial }: { products: Produc
                 <div className="text-right flex-shrink-0">
                   {discounted ? (
                     <>
-                      <p className="font-body text-xs text-brand-muted line-through">${salePrice.toFixed(2)}</p>
-                      <p className="font-heading text-2xl text-yellow-400">${eff.toFixed(2)}</p>
+                      <p className="font-body text-xs text-brand-muted line-through">PKR {salePrice.toFixed(0)}</p>
+                      <p className="font-heading text-2xl text-yellow-400">PKR {eff.toFixed(0)}</p>
                     </>
                   ) : (
-                    <p className="font-heading text-2xl text-brand-caramel">${salePrice.toFixed(2)}</p>
+                    <p className="font-heading text-2xl text-brand-caramel">PKR {salePrice.toFixed(0)}</p>
                   )}
                 </div>
               </div>
@@ -115,7 +115,7 @@ export default function ProductsClient({ products: initial }: { products: Produc
                 </div>
                 <div className="bg-brand-card p-3">
                   <p className="font-body text-[9px] tracking-[0.1em] uppercase text-brand-muted mb-1">Cost</p>
-                  <p className="font-heading text-xl text-brand-white">{cost !== null ? `$${cost.toFixed(2)}` : "—"}</p>
+                  <p className="font-heading text-xl text-brand-white">{cost !== null ? `PKR ${cost.toFixed(0)}` : "—"}</p>
                 </div>
                 <div className="bg-brand-card p-3">
                   <p className="font-body text-[9px] tracking-[0.1em] uppercase text-brand-muted mb-1">Profit</p>

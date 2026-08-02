@@ -105,14 +105,14 @@ export default function CartClient({ items: initial, total: initialTotal }: { it
           {items.map((item) => (
             <div key={item.id} className="flex justify-between font-body text-xs text-brand-muted">
               <span>{item.quantity}× {item.product.name}</span>
-              <span>${(Number(item.product.price) * item.quantity).toFixed(2)}</span>
+              <span>PKR {(Number(item.product.price) * item.quantity).toFixed(0)}</span>
             </div>
           ))}
         </div>
 
         <div className="flex justify-between mb-6">
           <span className="font-body text-sm font-semibold text-brand-white">Total</span>
-          <span className="font-heading text-3xl text-brand-white">${total.toFixed(2)}</span>
+          <span className="font-heading text-3xl text-brand-white">PKR {total.toFixed(0)}</span>
         </div>
 
         <a href="/checkout" className="block w-full bg-brand-flame hover:bg-brand-flame-dark text-white font-body text-xs font-semibold tracking-[0.25em] uppercase py-4 transition-colors mb-3 text-center">

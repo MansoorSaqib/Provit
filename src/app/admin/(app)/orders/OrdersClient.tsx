@@ -80,7 +80,7 @@ export default function OrdersClient({ orders }: { orders: Order[] }) {
                 </p>
               </div>
               <div className="flex items-center gap-4 flex-shrink-0">
-                <span className="font-heading text-xl text-brand-white">${Number(o.total).toFixed(2)}</span>
+                <span className="font-heading text-xl text-brand-white">PKR {Number(o.total).toFixed(0)}</span>
                 <span className="text-brand-muted text-xs">{expanded === o.id ? "▲" : "▼"}</span>
               </div>
             </div>
@@ -94,7 +94,7 @@ export default function OrdersClient({ orders }: { orders: Order[] }) {
                     {o.items.map((item, i) => (
                       <div key={i} className="flex justify-between font-body text-xs text-brand-white">
                         <span>{item.quantity}× {item.product.name} ({item.flavor})</span>
-                        <span>${(Number(item.priceAtPurchase) * item.quantity).toFixed(2)}</span>
+                        <span>PKR {(Number(item.priceAtPurchase) * item.quantity).toFixed(0)}</span>
                       </div>
                     ))}
                   </div>

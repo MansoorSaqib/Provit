@@ -100,7 +100,7 @@ export default function AccountClient({
           </div>
           <div className="bg-brand-surface border border-brand-border p-5">
             <p className="font-body text-[10px] tracking-[0.2em] uppercase text-brand-muted mb-2">Total Spent</p>
-            <p className="font-heading text-4xl text-brand-caramel">${totalSpent.toFixed(2)}</p>
+            <p className="font-heading text-4xl text-brand-caramel">PKR {totalSpent.toFixed(0)}</p>
           </div>
         </div>
       </div>
@@ -166,7 +166,7 @@ function OrderCard({ order, active }: { order: Order; active: boolean }) {
             {new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
           </p>
         </div>
-        <span className="font-heading text-2xl text-brand-white flex-shrink-0">${Number(order.total).toFixed(2)}</span>
+        <span className="font-heading text-2xl text-brand-white flex-shrink-0">PKR {Number(order.total).toFixed(0)}</span>
       </div>
 
       {/* Progress bar for active orders */}

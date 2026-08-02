@@ -63,7 +63,7 @@ export default async function CustomersPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-body text-[10px] uppercase tracking-[0.15em] text-brand-muted mb-0.5">Spent</p>
-                    <span className="font-heading text-2xl text-brand-caramel leading-none">${totalSpent.toFixed(2)}</span>
+                    <span className="font-heading text-2xl text-brand-caramel leading-none">PKR {totalSpent.toFixed(0)}</span>
                   </div>
                 </div>
               </div>

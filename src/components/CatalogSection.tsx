@@ -164,11 +164,11 @@ function ProductCard({ p, i }: { p: CatalogProduct; i: number }) {
           <div className="flex flex-col leading-none">
             {isOnSale && (
               <span className="font-body text-white/40 text-xs line-through mb-0.5">
-                Rs. {originalPrice!.toFixed(0)}
+                PKR {originalPrice!.toFixed(0)}
               </span>
             )}
             <span className="font-heading text-3xl text-white">
-              Rs. {effectivePrice.toFixed(0)}
+              PKR {effectivePrice.toFixed(0)}
             </span>
           </div>
           <button
@@ -274,8 +274,8 @@ export default function CatalogSection({ products }: { products: CatalogProduct[
           </div>
           <div className="flex items-center gap-6 flex-shrink-0">
             <div className="text-right">
-              <div className="font-body text-brand-muted text-xs line-through">Rs. 1396</div>
-              <div className="font-heading text-3xl text-brand-white">Rs. 1199</div>
+              <div className="font-body text-brand-muted text-xs line-through">PKR1396</div>
+              <div className="font-heading text-3xl text-brand-white">PKR1199</div>
             </div>
             <button
               className="px-8 py-4 font-body font-semibold text-xs text-white tracking-[0.2em] uppercase transition-all duration-200 hover:shadow-[0_0_30px_rgba(200,131,42,0.3)]"
