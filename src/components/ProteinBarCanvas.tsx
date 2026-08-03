@@ -247,11 +247,19 @@ export default function ProteinBarCanvas({ className }: { className?: string }) 
     const labelsEl = labelsRef.current;
     if (!container || !labelsEl) return;
 
+    let unmounted = false;
+    let disposeScene: (() => void) | null = null;
+
+    const run = () => {
+    if (unmounted) return;
+
+    const isMobile = window.innerWidth < 768;
+
     // ── Renderer ──────────────────────────────────────────────────────────────
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5));
+    renderer.shadowMap.enabled = !isMobile;
+    if (!isMobile) renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
@@ -278,11 +286,13 @@ export default function ProteinBarCanvas({ className }: { className?: string }) 
 
     const key = new THREE.DirectionalLight(0xfff6ee, 2.4);
     key.position.set(3, 7, 5);
-    key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
-    key.shadow.camera.left = -4; key.shadow.camera.right = 4;
-    key.shadow.camera.top = 4; key.shadow.camera.bottom = -4;
-    key.shadow.bias = -0.0015;
+    key.castShadow = !isMobile;
+    if (!isMobile) {
+      key.shadow.mapSize.set(1024, 1024);
+      key.shadow.camera.left = -4; key.shadow.camera.right = 4;
+      key.shadow.camera.top = 4; key.shadow.camera.bottom = -4;
+      key.shadow.bias = -0.0015;
+    }
     scene.add(key);
 
     const fill = new THREE.DirectionalLight(0xf2f4f8, 1.0);
@@ -580,7 +590,7 @@ export default function ProteinBarCanvas({ className }: { className?: string }) 
     });
     const glazeThickness = 0.035;
     const glazeAmp = 0, glazeFreqX = 13, glazePhase = 2.4;
-    const glazeSlab = buildRidgedSlab(barW + 0.02, barD + 0.02, glazeThickness, 80, 22, glazeAmp, glazeFreqX, glazePhase, glazeMat, 0.012);
+    const glazeSlab = buildRidgedSlab(barW + 0.02, barD + 0.02, glazeThickness, isMobile ? 40 : 80, isMobile ? 12 : 22, glazeAmp, glazeFreqX, glazePhase, glazeMat, 0.012);
     const glazeGroup = glazeSlab.group;
     glazeGroup.position.y = baseY + baseThickness / 2 + glazeThickness / 2;
     combinedGroup.add(glazeGroup);
@@ -640,7 +650,24 @@ export default function ProteinBarCanvas({ className }: { className?: string }) 
     let animTime = 0;
     let explodeFactor = 0;
     const labelProj = new THREE.Vector3();
-    let rafId: number;
+    let rafId = 0;
+    let inView = true;
+
+    const tryStart = () => {
+      if (inView && !document.hidden && !rafId) rafId = requestAnimationFrame(animate);
+    };
+    const tryStop = () => {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    };
+
+    const io = new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting;
+      inView ? tryStart() : tryStop();
+    }, { threshold: 0.05 });
+    io.observe(container);
+
+    const onVisibility = () => document.hidden ? tryStop() : tryStart();
+    document.addEventListener("visibilitychange", onVisibility);
 
     function animate() {
       rafId = requestAnimationFrame(animate);
@@ -712,11 +739,13 @@ export default function ProteinBarCanvas({ className }: { className?: string }) 
 
       renderer.render(scene, camera);
     }
-    animate();
+    tryStart();
 
     // ── Cleanup ───────────────────────────────────────────────────────────────
-    return () => {
-      cancelAnimationFrame(rafId);
+    disposeScene = () => {
+      tryStop();
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
       ro.disconnect();
       canvas.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp);
@@ -739,6 +768,19 @@ export default function ProteinBarCanvas({ className }: { className?: string }) 
       renderer.dispose();
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
       labelsEl.innerHTML = "";
+    };
+    }; // end run()
+
+    // Defer init off the critical rendering path
+    const tid = (typeof requestIdleCallback !== "undefined")
+      ? requestIdleCallback(run, { timeout: 1500 })
+      : setTimeout(run, 50) as unknown as number;
+
+    return () => {
+      unmounted = true;
+      if (typeof requestIdleCallback !== "undefined") cancelIdleCallback(tid as number);
+      else clearTimeout(tid as unknown as ReturnType<typeof setTimeout>);
+      disposeScene?.();
     };
   }, []);
 

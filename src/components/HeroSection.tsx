@@ -77,7 +77,7 @@ export default function HeroSection() {
           </motion.div>
 
           {/* FUEL — solid white */}
-          <div className="mb-10 lg:mb-14">
+          <h1 className="mb-10 lg:mb-14">
             <div className="overflow-hidden leading-none">
               <motion.span
                 initial={{ y: "108%" }}
@@ -123,7 +123,7 @@ export default function HeroSection() {
                 FIRE.
               </motion.span>
             </div>
-          </div>
+          </h1>
 
           {/* Body + CTAs */}
           <motion.div
