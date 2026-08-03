@@ -615,7 +615,7 @@ export default function ProteinBarCanvas({ className }: { className?: string }) 
     // ── Interaction ───────────────────────────────────────────────────────────
     let rotY = 0.3, targetRotY = 0.3;
     let rotX = 0.18, targetRotX = 0.18;
-    const camDist = 3.2;
+    const camDist = 3.7;
     let dragging = false, lastX = 0, lastY = 0;
 
     const canvas = renderer.domElement;
