@@ -5,7 +5,7 @@ import { Star } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "PROVIT نے میری post-workout meal کو مکمل بدل دیا۔ Caramel Crunch کا ذائقہ لاجواب ہے اور macros میری training کے لیے بالکل perfect ہیں۔ کوئی بھی اس کا مقابلہ نہیں کر سکتا۔",
+      "PROVIT has completely replaced my post-workout meal. The Caramel Crunch flavor is absolutely addictive and the macros are perfect for my training schedule. Nothing else comes close.",
     name: "Ali R.",
     role: "Competitive Athlete, Lahore",
     rating: 5,
@@ -15,7 +15,7 @@ const testimonials = [
   },
   {
     quote:
-      "میں نے ہر protein bar آزمایا ہے۔ PROVIT کے ذائقے اور صاف اجزاء کے قریب کوئی نہیں آتا۔ ہمارے پورے gym نے اسے adopt کر لیا ہے — اب ہم bulk میں order کرتے ہیں۔",
+      "I've tried every protein bar on the market. Nothing comes close to PROVIT in taste or clean ingredients. My entire gym is hooked. We order in bulk now.",
     name: "Ayesha K.",
     role: "CrossFit Athlete, Karachi",
     rating: 5,
@@ -25,7 +25,7 @@ const testimonials = [
   },
   {
     quote:
-      "میں اپنے ہر client کو PROVIT recommend کرتا ہوں۔ Protein content شاندار ہے، اجزاء صاف ہیں، اور ذائقہ واقعی حیرت انگیز ہے۔ ہر لحاظ سے ایک مکمل جیت۔",
+      "I recommend PROVIT to every single client. The protein content is excellent, the ingredients are clean, and they actually taste incredible. Win-win-win in every way.",
     name: "Hassan T.",
     role: "Personal Trainer & Nutritionist, Islamabad",
     rating: 5,
