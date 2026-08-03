@@ -37,7 +37,7 @@ const SocialIcons = [
 ];
 
 const nav = {
-  Products: ["Caramel Crunch", "Dark Choco Fudge", "Strawberry Blaze", "Peanut Butter Pro", "Variety Pack"],
+  Products: ["Caramel Crunch", "Dark Choco Fudge", "Variety Pack"],
   Company: ["About Us", "Our Story", "Careers", "Press", "Partners"],
   Support: ["FAQ", "Shipping & Returns", "Track Order", "Contact Us", "Privacy Policy"],
 };

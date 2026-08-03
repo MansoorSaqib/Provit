@@ -1,9 +1,9 @@
 const items = [
   "Premium Protein",
-  "20g Per Bar",
+  "11g Per Bar",
   "Clean Ingredients",
-  "4 Bold Flavors",
-  "220 Calories",
+  "2 Bold Flavors",
+  "172 Calories",
   "No Compromise",
   "Lab Tested",
 ];

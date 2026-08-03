@@ -54,7 +54,7 @@ const jsonLd = {
         "@type": "AggregateOffer",
         priceCurrency: "PKR",
         lowPrice: "299",
-        offerCount: "4",
+        offerCount: "2",
         availability: "https://schema.org/InStock",
         url: "https://www.provit.site/#products",
       },

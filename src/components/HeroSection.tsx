@@ -184,7 +184,7 @@ export default function HeroSection() {
           {[
             { value: "11g", label: "Protein Per Bar" },
             { value: "172", label: "Calories" },
-            { value: "4", label: "Bold Flavors" },
+            { value: "2", label: "Bold Flavors" },
             { value: "0g", label: "Artificial Additives" },
           ].map((s, i) => (
             <motion.div

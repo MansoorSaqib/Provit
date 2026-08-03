@@ -12,7 +12,7 @@ const reasons = [
   {
     number: "02",
     title: "High Performance",
-    body: "20g of premium whey protein isolate per bar, engineered to fuel muscle recovery and power every session.",
+    body: "11g of natural protein per bar from real ingredients — almonds, peanuts, and oats — engineered to fuel muscle recovery and power every session.",
     accent: "#E8522A",
   },
   {

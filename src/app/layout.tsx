@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: "%s | PROVIT",
   },
   description:
-    "PROVIT premium protein bars deliver 11g protein, 172 calories, and zero artificial additives. 4 bold flavors crafted for athletes who refuse to settle. Clean ingredients. Relentless taste. Shop now.",
+    "PROVIT premium protein bars deliver 11g protein, 172 calories, and zero artificial additives. 2 bold flavors crafted for athletes who refuse to settle. Clean ingredients. Relentless taste. Shop now.",
   keywords: [
     "protein bar",
     "premium protein bar",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     siteName: "PROVIT",
     title: "PROVIT | Premium Protein Bars — Fuel Your Fire",
     description:
-      "11g protein. 172 calories. Zero artificial additives. 4 bold flavors for athletes who refuse to settle.",
+      "11g protein. 172 calories. Zero artificial additives. 2 bold flavors for athletes who refuse to settle.",
     images: [
       {
         url: "/og-image.png",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "PROVIT | Premium Protein Bars",
     description:
-      "11g protein. 172 calories. Zero artificial additives. 4 bold flavors for athletes who refuse to settle.",
+      "11g protein. 172 calories. Zero artificial additives. 2 bold flavors for athletes who refuse to settle.",
     images: ["/og-image.png"],
   },
   icons: {

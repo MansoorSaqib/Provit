@@ -5,31 +5,31 @@ import { Star } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "PROVIT has completely replaced my post-workout meal. The Caramel Crunch flavor is absolutely addictive and the macros are perfect for my training schedule. Nothing else comes close.",
-    name: "Alex M.",
-    role: "Competitive Runner",
+      "PROVIT نے میری post-workout meal کو مکمل بدل دیا۔ Caramel Crunch کا ذائقہ لاجواب ہے اور macros میری training کے لیے بالکل perfect ہیں۔ کوئی بھی اس کا مقابلہ نہیں کر سکتا۔",
+    name: "Ali R.",
+    role: "Competitive Athlete, Lahore",
     rating: 5,
-    initials: "AM",
+    initials: "AR",
     colorA: "#E8522A",
     colorB: "#C8832A",
   },
   {
     quote:
-      "I've tried every protein bar on the market. Nothing comes close to PROVIT in taste or clean ingredients. My entire CrossFit box is hooked. We order in bulk now.",
-    name: "Sarah K.",
-    role: "CrossFit Athlete",
+      "میں نے ہر protein bar آزمایا ہے۔ PROVIT کے ذائقے اور صاف اجزاء کے قریب کوئی نہیں آتا۔ ہمارے پورے gym نے اسے adopt کر لیا ہے — اب ہم bulk میں order کرتے ہیں۔",
+    name: "Ayesha K.",
+    role: "CrossFit Athlete, Karachi",
     rating: 5,
-    initials: "SK",
+    initials: "AK",
     colorA: "#C8832A",
     colorB: "#E4A854",
   },
   {
     quote:
-      "I recommend PROVIT to every single client. The protein content is excellent, the ingredients are clean, and they actually taste incredible. Win-win-win in every way.",
-    name: "James T.",
-    role: "Personal Trainer & Nutritionist",
+      "میں اپنے ہر client کو PROVIT recommend کرتا ہوں۔ Protein content شاندار ہے، اجزاء صاف ہیں، اور ذائقہ واقعی حیرت انگیز ہے۔ ہر لحاظ سے ایک مکمل جیت۔",
+    name: "Hassan T.",
+    role: "Personal Trainer & Nutritionist, Islamabad",
     rating: 5,
-    initials: "JT",
+    initials: "HT",
     colorA: "#6B4423",
     colorB: "#C8832A",
   },
