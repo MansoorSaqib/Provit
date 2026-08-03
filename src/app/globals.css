@@ -40,6 +40,18 @@
   to   { transform: rotate(0deg); }
 }
 
+/* ── Hero headline — full width on mobile, split-column size on desktop ── */
+.hero-word {
+  font-size: clamp(5.5rem, 18vw, 17rem);
+  line-height: 0.88;
+}
+
+@media (min-width: 1024px) {
+  .hero-word {
+    font-size: clamp(5rem, 16vw, 17rem);
+  }
+}
+
 /* ── Base ── */
 html { scroll-behavior: smooth; }
 
