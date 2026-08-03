@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { motion } from "motion/react";
 import { ShoppingCart, ArrowRight } from "lucide-react";
 import { useState } from "react";
@@ -117,10 +118,12 @@ function ProductCard({ p, i }: { p: CatalogProduct; i: number }) {
       {/* Center content */}
       <div className="absolute inset-0 flex items-center justify-center">
         {hasImage ? (
-          <img
+          <Image
             src={p.images[0]}
             alt={p.name}
-            className="w-full h-full object-contain object-center transform group-hover:scale-110 group-hover:-translate-y-4 transition-all duration-500 ease-out p-10"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-contain object-center transform group-hover:scale-110 group-hover:-translate-y-4 transition-all duration-500 ease-out p-10"
           />
         ) : (
           <div className="transform group-hover:scale-110 group-hover:-translate-y-4 transition-all duration-500 ease-out">
